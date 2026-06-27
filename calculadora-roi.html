@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de ROI de Automação</title>
+<meta name="description" content="Descubra quanto tempo e dinheiro sua empresa economiza automatizando tarefas. Ferramenta por João Vitor Rizzieri.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#070a0f;--bg2:#0b1019;--panel:#0e141d;--line:#18222f;--line2:#243343;--ink:#eef4fb;--mut:#9fb0c2;--faint:#67788b;
+    --acc:#34d6e6;--acc2:#7af0fb;--green:#3fe08a;--acc-dim:rgba(52,214,230,.12);
+    --disp:'Sora',sans-serif;--body:'Manrope',sans-serif;--mono:'JetBrains Mono',monospace;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:48px 22px;}
+  body::before{content:"";position:fixed;inset:0;z-index:0;opacity:.5;pointer-events:none;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:54px 54px;mask-image:radial-gradient(ellipse 60% 50% at 50% 0%,#000,transparent 72%);}
+  .content{position:relative;z-index:1;width:100%;max-width:920px;}
+  .head{text-align:center;margin-bottom:34px;}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);}
+  h1{font-family:var(--disp);font-weight:800;font-size:clamp(28px,4.6vw,42px);letter-spacing:-.02em;margin:12px 0 10px;}
+  .head p{color:var(--mut);max-width:480px;margin:0 auto;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media(max-width:780px){.grid{grid-template-columns:1fr;}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:28px;}
+  .card h2{font-family:var(--disp);font-weight:700;font-size:17px;margin-bottom:22px;display:flex;align-items:center;gap:9px;}
+  .card h2 .n{font-family:var(--mono);font-size:12px;color:var(--acc);background:var(--acc-dim);padding:3px 9px;border-radius:6px;}
+  .field{margin-bottom:20px;}
+  .field label{display:block;font-size:13.5px;color:var(--mut);margin-bottom:9px;font-weight:500;}
+  .field .in{display:flex;align-items:center;background:var(--bg2);border:1px solid var(--line2);border-radius:10px;padding:0 14px;transition:border-color .2s;}
+  .field .in:focus-within{border-color:var(--acc);}
+  .field .in span{font-family:var(--mono);font-size:13px;color:var(--faint);}
+  .field input[type=number]{flex:1;background:none;border:none;outline:none;color:var(--ink);font-family:var(--disp);font-weight:700;font-size:20px;padding:13px 8px;width:100%;}
+  .field input[type=number]::-webkit-outer-spin-button,.field input[type=number]::-webkit-inner-spin-button{opacity:.4;}
+  .field .rng{display:flex;align-items:center;gap:14px;}
+  input[type=range]{flex:1;accent-color:var(--acc);height:5px;}
+  .pctv{font-family:var(--disp);font-weight:700;font-size:18px;color:var(--acc);min-width:50px;text-align:right;}
+  /* results */
+  .res .big{text-align:center;padding:14px 0 22px;border-bottom:1px solid var(--line);margin-bottom:22px;}
+  .res .big .l{font-family:var(--mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);}
+  .res .big .v{font-family:var(--disp);font-weight:800;font-size:clamp(38px,7vw,56px);color:var(--acc);letter-spacing:-.02em;line-height:1.05;margin-top:6px;}
+  .res .big .s{font-size:13px;color:var(--mut);margin-top:4px;}
+  .res .rows{display:flex;flex-direction:column;gap:14px;}
+  .res .r{display:flex;align-items:center;justify-content:space-between;font-size:14.5px;}
+  .res .r .k{color:var(--mut);}
+  .res .r .vv{font-family:var(--disp);font-weight:700;font-size:17px;}
+  .bar{margin:22px 0 6px;}
+  .bar .lab{display:flex;justify-content:space-between;font-size:12px;color:var(--faint);margin-bottom:7px;font-family:var(--mono);}
+  .bar .track{height:12px;border-radius:7px;background:var(--bg2);border:1px solid var(--line);overflow:hidden;}
+  .bar .fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--green));border-radius:7px;transition:width .5s cubic-bezier(.2,.7,.2,1);}
+  .cta{margin-top:24px;text-align:center;}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:15px;padding:14px 26px;border-radius:10px;background:var(--acc);color:#04181b;transition:.2s;}
+  .btn:hover{background:var(--acc2);transform:translateY(-2px);box-shadow:0 10px 30px rgba(52,214,230,.25);}
+  .foot{text-align:center;margin-top:30px;font-family:var(--mono);font-size:11.5px;color:var(--faint);}
+  .foot a{color:var(--acc);text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="content">
+  <div class="head">
+    <div class="eyebrow">Ferramenta</div>
+    <h1>Quanto você economiza automatizando?</h1>
+    <p>Preencha os dados da tarefa manual e veja o retorno em tempo real.</p>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2><span class="n">01</span> A sua tarefa manual hoje</h2>
+      <div class="field"><label>Horas por semana gastas na tarefa</label><div class="in"><input id="horas" type="number" min="0" value="10"><span>h / semana</span></div></div>
+      <div class="field"><label>Quantas pessoas fazem isso</label><div class="in"><input id="pessoas" type="number" min="1" value="2"><span>pessoas</span></div></div>
+      <div class="field"><label>Custo médio por hora</label><div class="in"><span>R$</span><input id="custo" type="number" min="0" value="35"><span>/ hora</span></div></div>
+      <div class="field"><label>Quanto disso dá pra automatizar</label><div class="rng"><input id="pct" type="range" min="10" max="100" value="70"><span class="pctv" id="pctv">70%</span></div></div>
+    </div>
+
+    <div class="card res">
+      <h2><span class="n">02</span> Seu retorno com automação</h2>
+      <div class="big"><div class="l">Economia por ano</div><div class="v" id="ano">R$ 0</div><div class="s" id="anoH">0 horas devolvidas ao time</div></div>
+      <div class="rows">
+        <div class="r"><span class="k">Horas economizadas / mês</span><span class="vv" id="hmes">0 h</span></div>
+        <div class="r"><span class="k">Economia / mês</span><span class="vv" id="mes" style="color:var(--acc)">R$ 0</span></div>
+        <div class="r"><span class="k">Equivale a</span><span class="vv" id="dias">0 dias de trabalho/ano</span></div>
+      </div>
+      <div class="bar">
+        <div class="lab"><span>Trabalho manual restante</span><span>Automatizado</span></div>
+        <div class="track"><div class="fill" id="fill" style="width:70%"></div></div>
+      </div>
+      <div class="cta"><a class="btn" id="mail" href="#">Quero automatizar isso →</a></div>
+    </div>
+  </div>
+
+  <div class="foot">Ferramenta de portfólio · feita por <a href="https://github.com/Lo1ro" target="_blank">João Vitor Rizzieri</a></div>
+</div>
+
+<script>
+  const $=id=>document.getElementById(id);
+  const fmt=n=>n.toLocaleString('pt-BR',{maximumFractionDigits:0});
+  function calc(){
+    const horas=+$('horas').value||0, pessoas=+$('pessoas').value||0, custo=+$('custo').value||0, pct=+$('pct').value/100;
+    $('pctv').textContent=Math.round(pct*100)+'%';
+    $('fill').style.width=(pct*100)+'%';
+    const hMesTotal=horas*pessoas*4.33;
+    const hEcoMes=hMesTotal*pct;
+    const rMes=hEcoMes*custo;
+    const rAno=rMes*12;
+    const hAno=hEcoMes*12;
+    const dias=hAno/8;
+    $('hmes').textContent=fmt(hEcoMes)+' h';
+    $('mes').textContent='R$ '+fmt(rMes);
+    $('ano').textContent='R$ '+fmt(rAno);
+    $('anoH').textContent=fmt(hAno)+' horas devolvidas ao time';
+    $('dias').textContent=fmt(dias)+' dias de trabalho/ano';
+    const subj=encodeURIComponent('Quero automatizar uma tarefa (vi pela calculadora)');
+    const body=encodeURIComponent('Oi João! Calculei aqui e dá pra economizar cerca de R$ '+fmt(rAno)+'/ano automatizando uma tarefa. Vamos conversar?');
+    $('mail').href='mailto:joaovitorrizzieri@gmail.com?subject='+subj+'&body='+body;
+  }
+  ['horas','pessoas','custo','pct'].forEach(id=>$(id).addEventListener('input',calc));
+  calc();
+</script>
+</body>
+</html>
